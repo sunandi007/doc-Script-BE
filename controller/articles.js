@@ -4,7 +4,7 @@ const slugify = require('slugify')
 
 module.exports = {
     allArticles: (req, res) => {
-        Articles.find({}, 'slug image title content', (err, articles) => {
+        Articles.find({}, 'slug image title content author description', (err, articles) => {
             if (err) console.error(err)
             if (articles.length > 0) {
                 res.json({
@@ -45,8 +45,10 @@ module.exports = {
             title: req.body.title,
             content: req.body.content,
             slug: slugifyResult.toLowerCase(),
-            image: req.body.image,
+            image: req.body.image ? req.body.image : 'https://w0.peakpx.com/wallpaper/759/741/HD-wallpaper-digital-technology-background-with-zeros-and-ones-digital-blue-background-binary-code-background-digital-data-binary-code-texture.jpg',
             category: req.body.category,
+            author: req.body.author,
+            description: req.body.description,
         }, (err, article) => {
             if (err) console.error(err)
             res.send({
@@ -59,7 +61,17 @@ module.exports = {
 
     updateArticle: (req, res) => {
         const id = req.params.id;
-        Articles.findByIdAndUpdate(id, req.body, {options: {new: true}}, (err, article) => {
+        const slugifyResult = slugify(req.body.title)
+        Articles.findByIdAndUpdate(id,
+            {
+                title: req.body.title,
+                content: req.body.content,
+                slug: slugifyResult.toLowerCase(),
+                image: req.body.image ? req.body.image : 'https://w0.peakpx.com/wallpaper/759/741/HD-wallpaper-digital-technology-background-with-zeros-and-ones-digital-blue-background-binary-code-background-digital-data-binary-code-texture.jpg',
+                category: req.body.category,
+                author: req.body.author,
+                description: req.body.description,
+            }, {options: {new: true}}, (err, article) => {
             if (err) console.log(err)
             if (article) {
                 res.json({
